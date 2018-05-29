@@ -97,7 +97,6 @@ $D bash -c "cd jdkbuild && \
     --enable-unlimited-crypto=yes \
     --disable-warnings-as-errors \
     --disable-hotspot-gtest \
-    --disable-precompiled-headers \
     --with-native-debug-symbols=${OJDK_WITH_NATIVE_DEBUG_SYMBOLS} \
     --with-debug-level=${OJDK_WITH_DEBUG_LEVEL} \
     --with-stdc++lib=static \
@@ -109,6 +108,7 @@ $D bash -c "cd jdkbuild && \
     --with-version-pre=${OJDK_MILESTONE} \
     --with-version-security=${OJDK_UPDATE} \
     --with-version-build=${OJDK_BUILD} \
+    --with-version-opt='' \
     --with-extra-cflags='-I/opt/sysroot/usr/include/c++/4.8 -I/opt/sysroot/usr/include/arm-linux-gnueabihf/c++/4.8' \
     --with-extra-cxxflags='-I/opt/sysroot/usr/include/c++/4.8 -I/opt/sysroot/usr/include/arm-linux-gnueabihf/c++/4.8'"
 $D bash -c "cd jdkbuild && \
@@ -118,7 +118,7 @@ $D bash -c "cd jdkbuild && \
 # bundle
 $D mv ./jdkbuild/images/jdk ${OJDK_IMAGE}
 $D rm -rf ./${OJDK_IMAGE}/demo
-$D cp -a /usr/share/fonts/truetype/dejavu/ ./${OJDK_IMAGE}/jre/lib/fonts
+$D cp -a /usr/share/fonts/truetype/dejavu/ ./${OJDK_IMAGE}/lib/fonts
 $D zip -qyr9 ${OJDK_IMAGE}.zip ${OJDK_IMAGE}
 $D mv ${OJDK_IMAGE}.zip /host/
 sha256sum ${OJDK_IMAGE}.zip > ${OJDK_IMAGE}.zip.sha256
