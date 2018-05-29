@@ -1,0 +1,50 @@
+# Copyright 2018, akashche at redhat.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+language: cpp
+
+sudo: required
+
+services:
+  - docker
+
+os:
+  - linux
+
+script:
+  - set -e
+  - export OJDK_TAG=`git describe --exact-match --tags HEAD`
+  - if [ -z ${OJDK_TAG} ] ; then exit 1 ; fi
+  - export OJDK_UPDATE=`echo ${OJDK_TAG} | sed 's/\./ /g' | sed 's/+/ /' | awk '{print $3}'`
+  - export OJDK_BUILD=`echo ${OJDK_TAG} | sed 's/+/ /' | awk '{print $2}'`
+  - export OJDK_MILESTONE=ojdkbuild
+  - export OJDK_IMAGE=jdk-9.0.${OJDK_UPDATE}-${OJDK_MILESTONE}-linux-armhf
+  - ./jdk9u-aarch32-u1404.sh ${OJDK_TAG}
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: mkZgG0eyzFh3J8jx0Za/Yi56nJ63HcwteUg00CDbvlayfRssvOolX5i50edZtE3QebF8gLsvWgpl0t9xUCuWOXTduAVgzarZEVonvjDn7feL9E4L/e6Tf0j0k1pVDHvSFXg2CYoQDwvY+EFAARBYrVqbeYLbW2sxioLJE+EeFS/fK7IeqvAurs9MRfEzYxv6xF5bHJCKWiOrkyGsSjBQnsYVd2+ZTVjP+wyR5GHErRyYEVOkfdNvJuTQeCrRBe+XVeETAZQwzg1OslL8XEOTg89L4Ix7/QH7q59Hk86lVpNLs3bm781hiqkWuJ0K+mtWpFakHRFc0oZqKZ1G4r1VN1dNQgIUwFEkjdVCaYqCBLP1RbHuQnR1VmP2fCSjxclopsDCmeNcI3II8YHF0XSkB0GXePwsdMlFPnTLFJ0QZ9Bc3U5CDxy9bQZPxxMMzxhcb5uqR25D7jevLAQxodmkCDcq0Six/3NtLK6MDZzeOIZzpr2Wy7Albqivu0JjUmZWqjZ3qmU9ULtRrWNZlspvvJcBULvpPUbJeKhgSzbMILjNowz8SFkPEw7Q2crhgRPLcNYYBKKGJYjbhPQTMg/qmAVJLkE0ao1YhK+x7w2RceE1l/Yn/MvHIacdNfTCexem1PyJpX6st/pM9zcHI2/ZqMHJo/oeou4789VEbL4aHCE=
+  file:
+    - ${OJDK_IMAGE}.zip
+    - ${OJDK_IMAGE}.zip.sha256
+  on:
+    repo: ojdkbuild/contrib_jdk9u-aarch32-ci
+    tags: true
+
+notifications:
+  email:
+    on_success: always
+
